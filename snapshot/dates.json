@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "latest_date": "2026-05-17",
+  "generated_at": "2026-05-17T09:31:00",
+  "dates_available": [
+    "2026-05-17"
+  ],
+  "pool_size": 24,
+  "disclaimer": "仅供给 ChatGPT 等外部分析端读取,只包含数据 + 指标,不输出买入/卖出/能不能追"
+}
