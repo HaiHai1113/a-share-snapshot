@@ -20,19 +20,21 @@ A 股自选股每日快照(只读),给老板自定义 GPT 用。
     └── dates.json        ← 可查询日期索引
 ```
 
-## 访问方式
+## 访问方式(GitHub Pages, 公开 + 无鉴权)
 
-仅限带 GitHub fine-grained PAT 的 GET 请求。无 token 一律 404。
+repo 是 public, 通过 GitHub Pages 静态托管, 直接 GET:
 
 ```
-GET https://raw.githubusercontent.com/HaiHai1113/a-share-snapshot/main/snapshot/latest.json
-Authorization: Bearer <PAT>
+GET https://haihai1113.github.io/a-share-snapshot/snapshot/latest.json
+GET https://haihai1113.github.io/a-share-snapshot/snapshot/dates.json
+GET https://haihai1113.github.io/a-share-snapshot/snapshot/YYYY-MM-DD.json
 ```
+
+不需要 Authorization header, 不需要 PAT, 任何客户端都能拉。
 
 ## 安全边界
 
-- repo 是 private,不索引,无搜索曝光
-- 仅同步 `data/a_share_snapshot/` 下的 JSON,不含持仓/订单/账本/.env
-- 同步脚本走老板本机 `gh auth` 凭证,不嵌任何密钥
-- GPT Actions 用一个**专用** fine-grained PAT(只读这一个 repo 的 Contents),
-  跟老板本人的 GitHub 主 token 完全隔离
+- repo 是 **public**, 自选股 24 只代码 + 行情/指标可被任何人拉取 (老板已同意暴露范围)
+- 仅同步 `data/a_share_snapshot/` 下的 JSON,**不含**持仓 / 订单 / 账本 / .env
+- 持仓 / 真实交易记录由 trader-copilot 主仓单独管控, 跟本 repo **物理隔离**
+- 同步脚本走老板本机 `gh auth` 凭证(只用来 push 本 repo), 不嵌任何密钥
