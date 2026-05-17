@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: A 股自选股每日快照(只读)
+  version: "1.0.0"
+  description: |
+    每天 9:31 集合竞价后, daily_radar 把 24 只 A 股自选的实时报价 + 日 K 指标
+    快照写到 JSON, 9:35 同步到 GitHub private repo。
+    本接口仅供老板自定义 GPT 只读分析, 不下单、不写持仓、不读 .env。
+
+    字段单位:
+      - 价格: 元
+      - 成交量 volume: 股
+      - 成交额 amount: 元
+      - change_pct/涨跌幅: 百分比(已乘以100, 例 -4.94 表示 -4.94%)
+      - MA/MACD/RSI 均基于 tushare 日 K 前复权(qfq)序列计算
+
+servers:
+  - url: https://raw.githubusercontent.com/HaiHai1113/a-share-snapshot/main
+
+paths:
+  /snapshot/latest.json:
+    get:
+      operationId: getLatestSnapshot
+      summary: 拿最新一份快照(当日交易日的)
+      description: 返回最近一次 daily_radar 生成的 latest.json, 内含 24 只股票完整字段。
+      responses:
+        "200":
+          description: 单日快照
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Snapshot"
+        "401":
+          description: Token 缺失或无效
+        "404":
+          description: 仓库或文件不存在
+
+  /snapshot/{date}.json:
+    get:
+      operationId: getSnapshotByDate
+      summary: 按交易日拿历史快照
+      description: 拿指定交易日(YYYY-MM-DD)的快照。可用日期请先调 listSnapshotDates。
+      parameters:
+        - name: date
+          in: path
+          required: true
+          description: 交易日, 格式 YYYY-MM-DD, 例如 2026-05-17
+          schema:
+            type: string
+            pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+      responses:
+        "200":
+          description: 单日快照
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Snapshot"
+        "404":
+          description: 该日期无快照(可能是节假日或未生成)
+
+  /snapshot/dates.json:
+    get:
+      operationId: listSnapshotDates
+      summary: 列出可查询的快照日期
+      description: 返回当前 repo 里所有可拿到的快照日期清单(倒序)。
+      responses:
+        "200":
+          description: 日期索引
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatesIndex"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: GitHub fine-grained PAT, 只读 HaiHai1113/a-share-snapshot 这一个仓的 Contents
+
+  schemas:
+    DatesIndex:
+      type: object
+      required: [schema_version, latest_date, dates_available]
+      properties:
+        schema_version:
+          type: integer
+          example: 1
+        latest_date:
+          type: string
+          example: "2026-05-17"
+          description: 最新一份快照对应的交易日
+        generated_at:
+          type: string
+          description: 最新一份快照生成时间(本地时间)
+        dates_available:
+          type: array
+          items:
+            type: string
+            pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          description: 可查询的历史快照日期(倒序)
+        pool_size:
+          type: integer
+          description: 自选股池大小
+        disclaimer:
+          type: string
+
+    Snapshot:
+      type: object
+      required: [schema_version, date, items, disclaimer]
+      properties:
+        schema_version:
+          type: integer
+        date:
+          type: string
+          description: 交易日 YYYY-MM-DD
+        generated_at:
+          type: string
+          description: 生成时间(本地)
+        data_source:
+          type: object
+          description: 各字段的数据来源标签
+        disclaimer:
+          type: string
+        pool_size:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SymbolSnapshot"
+
+    SymbolSnapshot:
+      type: object
+      required: [symbol, name, market, price]
+      properties:
+        symbol:
+          type: string
+          example: "600118"
+          description: 6 位股票代码(或港股 5 位)
+        name:
+          type: string
+          example: "中国卫星"
+        market:
+          type: string
+          description: A=A 股 / HK=港股
+        time:
+          type: string
+          description: 实时行情时间戳 ISO8601
+        price:
+          type: number
+          description: 现价(元)
+        change_pct:
+          type: number
+          description: 涨跌幅(%, 已乘 100)
+        open:
+          type: number
+        high:
+          type: number
+        low:
+          type: number
+        prev_close:
+          type: number
+        volume:
+          type: number
+          description: 成交量(股)
+        amount:
+          type: number
+          description: 成交额(元)
+        volume_ratio:
+          type: number
+          nullable: true
+        quote_source:
+          type: string
+
+        ma5:
+          type: number
+          nullable: true
+        ma10:
+          type: number
+          nullable: true
+        ma20:
+          type: number
+          nullable: true
+        ma30:
+          type: number
+          nullable: true
+        ma60:
+          type: number
+          nullable: true
+        ma120:
+          type: number
+          nullable: true
+        ma200:
+          type: number
+          nullable: true
+        ma_source:
+          type: string
+
+        macd_dif:
+          type: number
+          nullable: true
+        macd_dea:
+          type: number
+          nullable: true
+        macd_hist:
+          type: number
+          nullable: true
+        macd_source:
+          type: string
+
+        rsi6:
+          type: number
+          nullable: true
+        rsi12:
+          type: number
+          nullable: true
+        rsi24:
+          type: number
+          nullable: true
+        rsi_source:
+          type: string
+
+        volume_ma5:
+          type: number
+          nullable: true
+        volume_ma10:
+          type: number
+          nullable: true
+        volume_ma20:
+          type: number
+          nullable: true
+        amount_ma5:
+          type: number
+          nullable: true
+        amount_ma20:
+          type: number
+          nullable: true
+        volume_vs_ma5:
+          type: number
+          nullable: true
+        volume_vs_ma20:
+          type: number
+          nullable: true
+        volume_amount_source:
+          type: string
+
+        price_change_pct:
+          type: number
+          nullable: true
+        intraday_range_pct:
+          type: number
+          nullable: true
+        close_position_in_day_range:
+          type: number
+          nullable: true
+        volume_price_label:
+          type: string
+
+        recent_high_20:
+          type: number
+          nullable: true
+        recent_low_20:
+          type: number
+          nullable: true
+        recent_high_60:
+          type: number
+          nullable: true
+        recent_low_60:
+          type: number
+          nullable: true
+
+        support_candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              price:
+                type: number
+              source:
+                type: string
+        pressure_candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              price:
+                type: number
+              source:
+                type: string
+        structure_source:
+          type: string
+
+        limit_up_price:
+          type: number
+          nullable: true
+        limit_down_price:
+          type: number
+          nullable: true
+        is_limit_up:
+          type: boolean
+          nullable: true
+        is_limit_down:
+          type: boolean
+          nullable: true
+
+security:
+  - bearerAuth: []
