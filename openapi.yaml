@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: A 股自选股每日快照(只读)
   version: "1.0.0"
@@ -167,107 +167,135 @@ components:
           type: number
           description: 成交额(元)
         volume_ratio:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         quote_source:
           type: string
 
         ma5:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma10:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma30:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma60:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma120:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma200:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         ma_source:
           type: string
 
         macd_dif:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         macd_dea:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         macd_hist:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         macd_source:
           type: string
 
         rsi6:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         rsi12:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         rsi24:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         rsi_source:
           type: string
 
         volume_ma5:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_ma10:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_ma20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         amount_ma5:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         amount_ma20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_vs_ma5:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_vs_ma20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_amount_source:
           type: string
 
         price_change_pct:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         intraday_range_pct:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         close_position_in_day_range:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         volume_price_label:
           type: string
 
         recent_high_20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         recent_low_20:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         recent_high_60:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         recent_low_60:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
 
         support_candidates:
           type: array
@@ -291,17 +319,21 @@ components:
           type: string
 
         limit_up_price:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         limit_down_price:
-          type: number
-          nullable: true
+          type:
+            - number
+            - "null"
         is_limit_up:
-          type: boolean
-          nullable: true
+          type:
+            - boolean
+            - "null"
         is_limit_down:
-          type: boolean
-          nullable: true
+          type:
+            - boolean
+            - "null"
 
 security:
   - bearerAuth: []
