@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "latest_date": "2026-06-27",
-  "generated_at": "2026-06-27T09:31:05",
+  "latest_date": "2026-05-11",
+  "generated_at": "2026-05-11T09:25:00",
   "dates_available": [
     "2026-06-27",
     "2026-06-26",
@@ -32,6 +32,6 @@
     "2026-05-17",
     "2026-05-11"
   ],
-  "pool_size": 12,
+  "pool_size": 2,
   "disclaimer": "仅供给 ChatGPT 等外部分析端读取,只包含数据 + 指标,不输出买入/卖出/能不能追"
 }
